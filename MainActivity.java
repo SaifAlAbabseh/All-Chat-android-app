@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         private boolean isOk=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/checkInfoForLogin.php?check=fromMobile1090&username="+username+"&password="+password;
-            String link2="http://"+DBInfo.hostName+"/All_Chat/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+password+"&which=2";
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/checkInfoForLogin.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link2="http://"+DBInfo.hostName+"/All_Chat/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=2";
             try{
                 URL url = new URL(link);
                 URL url2=new URL(link2);

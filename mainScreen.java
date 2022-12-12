@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class mainScreen extends AppCompatActivity {
     public static String username,password;
@@ -41,7 +42,7 @@ public class mainScreen extends AppCompatActivity {
         loadUserData();
     }
     public void goToProfileEditScreen(View v){
-        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( "http://"+DBInfo.hostName+"/All_Chat/uploadPic.php?username="+username+"&password="+password+"&temp=javaToWeb1090" ) );
+        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( "http://"+DBInfo.hostName+"/All_Chat/uploadPic.php?username="+username+"&password="+otherMethods.getMd5(password)+"&temp=javaToWeb1090" ) );
         startActivity( browse );
     }
 
@@ -56,7 +57,7 @@ public class mainScreen extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/addFriend.php?check=fromMobile1090&username="+username+"&password="+password+"&friendUsername="+friendUsername;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/addFriend.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -159,7 +160,7 @@ public class mainScreen extends AppCompatActivity {
         private boolean isOk=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+password+"&which=1";
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=1";
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -229,8 +230,8 @@ public class mainScreen extends AppCompatActivity {
         private boolean isOk2=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+password;
-            String link2="http://"+DBInfo.hostName+"/All_Chat/Mobile/getFriends.php?check=fromMobile1090&username="+username+"&password="+password;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link2="http://"+DBInfo.hostName+"/All_Chat/Mobile/getFriends.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();

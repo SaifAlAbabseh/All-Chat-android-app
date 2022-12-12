@@ -103,7 +103,7 @@ public class createAccountScreen extends AppCompatActivity {
         private boolean isOk=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/createAccount.php?check=fromMobile1090&username="+username+"&password="+password;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/createAccount.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();

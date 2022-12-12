@@ -87,7 +87,7 @@ public class chattingScreen extends AppCompatActivity {
                 tableName+=friendUsername+username;
             }
 
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/checkLastMessage.php?check=fromMobile1090&username="+username+"&password="+password+"&tableName="+tableName+"&lastIndex="+lastIndex;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/checkLastMessage.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName+"&lastIndex="+lastIndex;
 
             try{
                 URL url = new URL(link);
@@ -162,7 +162,7 @@ public class chattingScreen extends AppCompatActivity {
                 tableName+=friendUsername+username;
             }
 
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getMessages.php?check=fromMobile1090&username="+username+"&password="+password+"&tableName="+tableName;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getMessages.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName;
 
             try{
                 URL url = new URL(link);
@@ -299,7 +299,7 @@ public class chattingScreen extends AppCompatActivity {
         private String msg;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getFriendData.php?check=fromMobile1090&username="+username+"&password="+password+"&friendUsername="+friendUsername;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getFriendData.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -381,7 +381,7 @@ public class chattingScreen extends AppCompatActivity {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/sendMessage.php?check=fromMobile1090&username="+username+"&password="+password+"&tableName="+tableName+"&message="+encodedMessage+"&lastIndex="+lastIndex;
+            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/sendMessage.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName+"&message="+encodedMessage+"&lastIndex="+lastIndex;
 
 
             try{
