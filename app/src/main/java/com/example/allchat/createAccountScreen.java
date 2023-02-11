@@ -19,14 +19,42 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class createAccountScreen extends AppCompatActivity {
+    private String captchaText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account_screen);
         getSupportActionBar().hide();
         otherMethods.changeStatusBarColor(this);
+        showSignUpCaptchaText();
         setListenerToConfirmPassField();
     }
+
+    private void showSignUpCaptchaText(){
+        TextView codeBox = (TextView) findViewById(R.id.signup_code_text);
+        captchaText = generateSignupCaptcha();
+        codeBox.setText(captchaText);
+    }
+
+    private String generateSignupCaptcha(){
+        int lengthOfCaptcha = (int)((Math.random() * 3) + 4);
+
+        final String alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final String numbers = "0123456789";
+        final String[] chars = {alphabets, numbers};
+
+        int alphaOrNumber = (int)(Math.random() * 2);
+        int whatPos = (int)(Math.random() * chars[alphaOrNumber].length());
+        String result = "";
+        for(int i = 1; i <= lengthOfCaptcha; i++){
+            result += chars[alphaOrNumber].charAt(whatPos);
+            alphaOrNumber = (int)(Math.random() * 2);
+            whatPos = (int)(Math.random() * chars[alphaOrNumber].length());
+        }
+        return result;
+    }
+
     public void showUsernameReq(View v){
 
 
@@ -90,9 +118,6 @@ public class createAccountScreen extends AppCompatActivity {
             }
         });
     }
-    public void goBackToLoginScreen(View v) {
-        finish();
-    }
     public class conn extends AsyncTask<Void,Void,Void> {
         String username="",password="";
         public conn(String username,String password){
@@ -153,16 +178,23 @@ public class createAccountScreen extends AppCompatActivity {
             EditText usernameField=(EditText) findViewById(R.id.signup_username_field);
             EditText passField=(EditText) findViewById(R.id.signup_password_field);
             EditText conpassField=(EditText) findViewById(R.id.signup_confirmPass_field);
+            EditText captchaField = (EditText) findViewById(R.id.signup_captcha_userInput);
 
-            if(usernameField.getText().toString().trim().equals("") || passField.getText().toString().trim().equals("") || conpassField.getText().toString().trim().equals("")){
+            if(usernameField.getText().toString().trim().equals("") || passField.getText().toString().trim().equals("") || conpassField.getText().toString().trim().equals("") || captchaField.getText().toString().trim().equals("")){
                 Toast.makeText(this,"Fields cannot be empty",Toast.LENGTH_SHORT).show();
             }
             else{
                 if(passField.getText().toString().equals(conpassField.getText().toString())){
                     if(otherMethods.checkUsernameIfValid(usernameField.getText().toString())){
                         if(otherMethods.checkPasswordIfValid(passField.getText().toString())){
-                            conn c=new conn(usernameField.getText().toString(),passField.getText().toString());
-                            c.execute();
+                            if(captchaField.getText().toString().equals(captchaText)){
+                                conn c=new conn(usernameField.getText().toString(), passField.getText().toString());
+                                c.execute();
+                            }
+                            else {
+                                showSignUpCaptchaText();
+                                Toast.makeText(this,"Invalid captcha, try again",Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else{
                             Toast.makeText(this,"Check password requirements",Toast.LENGTH_SHORT).show();
