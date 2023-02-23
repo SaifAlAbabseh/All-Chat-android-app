@@ -40,17 +40,18 @@ public class createAccountScreen extends AppCompatActivity {
     private String generateSignupCaptcha(){
         int lengthOfCaptcha = (int)((Math.random() * 3) + 4);
 
-        final String alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final String capital_alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final String small_alphabets = "abcdefghijklmnopqrstuvwxyz";
         final String numbers = "0123456789";
-        final String[] chars = {alphabets, numbers};
+        final String[] chars = {capital_alphabets, small_alphabets, numbers};
 
-        int alphaOrNumber = (int)(Math.random() * 2);
-        int whatPos = (int)(Math.random() * chars[alphaOrNumber].length());
+        int capitAlphaOrSmallAlphaOrNumber = (int)(Math.random() * 3);
+        int whatPos = (int)(Math.random() * chars[capitAlphaOrSmallAlphaOrNumber].length());
         String result = "";
         for(int i = 1; i <= lengthOfCaptcha; i++){
-            result += chars[alphaOrNumber].charAt(whatPos);
-            alphaOrNumber = (int)(Math.random() * 2);
-            whatPos = (int)(Math.random() * chars[alphaOrNumber].length());
+            result += chars[capitAlphaOrSmallAlphaOrNumber].charAt(whatPos);
+            capitAlphaOrSmallAlphaOrNumber = (int)(Math.random() * 3);
+            whatPos = (int)(Math.random() * chars[capitAlphaOrSmallAlphaOrNumber].length());
         }
         return result;
     }
