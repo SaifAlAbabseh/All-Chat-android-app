@@ -20,9 +20,6 @@
             android:name=".mainScreen"
             android:exported="false" />
         <activity
-            android:name=".createAccountScreen"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

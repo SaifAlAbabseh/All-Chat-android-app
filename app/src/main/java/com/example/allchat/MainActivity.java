@@ -4,9 +4,11 @@ import static cz.msebera.android.httpclient.protocol.HTTP.USER_AGENT;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Browser;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -27,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToSignUpScreen(View v){
-        startActivity(new Intent(this,createAccountScreen.class));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.1.11/All_Chat"));
+        startActivity(browserIntent);
     }
     public class conn extends AsyncTask<Void,Void,Void> {
         String username,password;

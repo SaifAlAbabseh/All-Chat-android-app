@@ -351,7 +351,7 @@ public class chattingScreen extends AppCompatActivity {
 
         ImageView friendPicField=(ImageView)findViewById(R.id.chatFriendPic);
 
-        Picasso.get().load("http://"+DBInfo.hostName+"/All_Chat/Extra/styles/images/"+friendPicName+".png").into(friendPicField);
+        Picasso.get().load("http://"+DBInfo.hostName+"/All_Chat/Extra/styles/images/users%20images/"+friendPicName+".png").into(friendPicField);
     }
     private void loadFriendUsername(){
         TextView usernameView=(TextView) findViewById(R.id.friendUsernameChat);
