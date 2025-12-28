@@ -42,7 +42,7 @@ public class mainScreen extends AppCompatActivity {
         loadUserData();
     }
     public void goToProfileEditScreen(View v){
-        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( "http://"+DBInfo.hostName+"/All_Chat/uploadPic.php?username="+username+"&password="+otherMethods.getMd5(password)+"&temp=javaToWeb1090" ) );
+        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( "http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/uploadPic.php?username="+username+"&password="+otherMethods.getMd5(password)+"&temp=javaToWeb1090" ) );
         startActivity( browse );
     }
 
@@ -57,7 +57,7 @@ public class mainScreen extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/addFriend.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
+            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/addFriend.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -160,7 +160,7 @@ public class mainScreen extends AppCompatActivity {
         private boolean isOk=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=1";
+            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=1";
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -213,7 +213,7 @@ public class mainScreen extends AppCompatActivity {
         TextView nameonmainpopup=(TextView)d.findViewById(R.id.usernameView);
         nameonmainpopup.setText(username);
         ImageView profilePic=(ImageView)d.findViewById(R.id.mainPopUpPic);
-        Picasso.get().load("http://"+DBInfo.hostName+"/All_Chat/Extra/styles/images/users%20images/"+profilePicName+".png").into(profilePic);
+        Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+profilePicName+".png").into(profilePic);
         d.show();
         Window window = d.getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -230,8 +230,8 @@ public class mainScreen extends AppCompatActivity {
         private boolean isOk2=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/All_Chat/Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
-            String link2="http://"+DBInfo.hostName+"/All_Chat/Mobile/getFriends.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link2="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/getFriends.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -288,7 +288,7 @@ public class mainScreen extends AppCompatActivity {
 
             ImageView pic=new ImageView(mainScreen.this);
             pic.setLayoutParams(new TableRow.LayoutParams(150,150));
-            Picasso.get().load("http://"+DBInfo.hostName+"/All_Chat/Extra/styles/images/users%20images/"+picture+".png").into(pic);
+            Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+picture+".png").into(pic);
 
             TextView uname=new TextView(mainScreen.this);
             uname.setText(username);
@@ -366,7 +366,7 @@ public class mainScreen extends AppCompatActivity {
             if(isOk){
                 profilePicName=msg;
                 ImageView profilePic=(ImageView)findViewById(R.id.profilePicture);
-                Picasso.get().load("http://"+DBInfo.hostName+"/All_Chat/Extra/styles/images/users%20images/"+profilePicName+".png").into(profilePic);
+                Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+profilePicName+".png").into(profilePic);
             }
             else{
                 finish();
