@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace "com.example.allchat"
     compileSdk 32
 
     useLibrary 'org.apache.http.legacy'
