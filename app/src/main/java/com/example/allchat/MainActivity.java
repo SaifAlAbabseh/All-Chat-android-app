@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToSignUpScreen(View v){
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.1.25/"+DBInfo.siteName));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(DBInfo.hostName+"?t=0"));
         startActivity(browserIntent);
     }
     public class conn extends AsyncTask<Void,Void,Void> {
@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         private boolean isOk=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/checkInfoForLogin.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
-            String link2="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=2";
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/checkInfoForLogin.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link2=DBInfo.hostName+DBInfo.siteName+"Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=2";
             try{
                 URL url = new URL(link);
                 URL url2=new URL(link2);
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else{
                         Toast.makeText(MainActivity.this,msg,Toast.LENGTH_SHORT).show();
+                        System.out.println(msg);
                     }
                 }},2000);
         }

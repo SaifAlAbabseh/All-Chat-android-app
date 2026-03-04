@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +43,7 @@ public class mainScreen extends AppCompatActivity {
         loadUserData();
     }
     public void goToProfileEditScreen(View v){
-        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( "http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/uploadPic.php?username="+username+"&password="+otherMethods.getMd5(password)+"&temp=javaToWeb1090" ) );
+        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( DBInfo.hostName+DBInfo.siteName+"uploadPic.php?username="+username+"&password="+otherMethods.getMd5(password)+"&temp=javaToWeb1090" ) );
         startActivity( browse );
     }
 
@@ -57,7 +58,7 @@ public class mainScreen extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/addFriend.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/addFriend.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -87,15 +88,59 @@ public class mainScreen extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(isOk){
-                        Toast.makeText(mainScreen.this,"Successfully added friend",Toast.LENGTH_SHORT).show();
-                        addFriendFieldRef.setText("");
-                        loading.hide();
+                    Toast.makeText(mainScreen.this, msg,Toast.LENGTH_SHORT).show();
+                    addFriendFieldRef.setText("");
+                    loading.hide();
+                }
+            },3000);
+
+        }
+    }
+
+    public class deleteFriendConn extends AsyncTask<Void,Void,Void>{
+        private String msg="";
+        private boolean isOk=false;
+        private String friendUsername;
+        private String deletedFriendFieldRef;
+        public deleteFriendConn(String friendUsername,String deletedFriendFieldRef){
+            this.friendUsername=friendUsername;
+            this.deletedFriendFieldRef=deletedFriendFieldRef;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/deleteFriend.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
+            try{
+                URL url = new URL(link);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
+                con.setRequestProperty("User-Agent", USER_AGENT);
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String line=""+in.readLine();
+                    msg=line;
+                }
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Dialog loading=new Dialog(mainScreen.this);
+            loading.setContentView(R.layout.loadingscreen);
+            loading.setCanceledOnTouchOutside(false);
+            loading.show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mainScreen.this, msg,Toast.LENGTH_SHORT).show();
+                    LinearLayout friendsBox = findViewById(R.id.friendsBox);
+                    View friendRow = friendsBox.findViewWithTag(deletedFriendFieldRef);
+                    if(friendRow != null) {
+                        friendsBox.removeView(friendRow);
                     }
-                    else{
-                        loading.hide();
-                        Toast.makeText(mainScreen.this,""+msg,Toast.LENGTH_SHORT).show();
-                    }
+                    loading.hide();
                 }
             },3000);
 
@@ -160,7 +205,7 @@ public class mainScreen extends AppCompatActivity {
         private boolean isOk=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=1";
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/updateAvailability.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&which=1";
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -213,7 +258,7 @@ public class mainScreen extends AppCompatActivity {
         TextView nameonmainpopup=(TextView)d.findViewById(R.id.usernameView);
         nameonmainpopup.setText(username);
         ImageView profilePic=(ImageView)d.findViewById(R.id.mainPopUpPic);
-        Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+profilePicName+".png").into(profilePic);
+        Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+profilePicName+".png").into(profilePic);
         d.show();
         Window window = d.getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -230,8 +275,8 @@ public class mainScreen extends AppCompatActivity {
         private boolean isOk2=false;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
-            String link2="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/getFriends.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
+            String link2=DBInfo.hostName+DBInfo.siteName+"Mobile/getFriends.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -277,18 +322,18 @@ public class mainScreen extends AppCompatActivity {
             String[] arr1=fullmsg.split("&");
             for(int i=0;i<arr1.length;i++){
                 String[] arr2=arr1[i].split("\\|");
-                setFriend(arr2[0],arr2[1],arr2[3]);
+                setFriend(arr2[0],arr2[1],arr2[3], i+1);
             }
 
         }
 
-        private void setFriend(String username,String picture,String whichSide){
+        private void setFriend(String username,String picture,String whichSide, int id){
 
-
+            LinearLayout layout=(LinearLayout) findViewById(R.id.friendsBox);
 
             ImageView pic=new ImageView(mainScreen.this);
             pic.setLayoutParams(new TableRow.LayoutParams(150,150));
-            Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+picture+".png").into(pic);
+            Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+picture+".png").into(pic);
 
             TextView uname=new TextView(mainScreen.this);
             uname.setText(username);
@@ -296,13 +341,27 @@ public class mainScreen extends AppCompatActivity {
             uname.setTextSize(25);
             uname.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.MATCH_PARENT));
 
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(20, 0, 20, 0);
+
             Button chatButton=new Button(mainScreen.this);
-            chatButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.MATCH_PARENT));
+            chatButton.setLayoutParams(params);
             chatButton.setPadding(0,0,0,0);
             chatButton.setText("Chat");
             chatButton.setTextSize(15);
             chatButton.setTextColor(Color.BLACK);
-            chatButton.setBackgroundColor(Color.RED);
+            chatButton.setBackgroundColor(Color.GREEN);
+
+            Button deleteButton=new Button(mainScreen.this);
+            deleteButton.setLayoutParams(params);
+            deleteButton.setPadding(0,0,0,0);
+            deleteButton.setText("Delete");
+            deleteButton.setTextSize(15);
+            deleteButton.setTextColor(Color.BLACK);
+            deleteButton.setBackgroundColor(Color.RED);
 
             chatButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -327,6 +386,14 @@ public class mainScreen extends AppCompatActivity {
                 }
             });
 
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String rowTag = "friend_"+id;
+                    new deleteFriendConn(username, rowTag).execute();
+                }
+            });
+
 
             TableRow row=new TableRow(mainScreen.this);
             row.setGravity(Gravity.CENTER);
@@ -344,29 +411,35 @@ public class mainScreen extends AppCompatActivity {
             row3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
 
 
+            TableLayout tableLayout = new TableLayout(mainScreen.this);
+            tableLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
             row2.addView(uname);
-
-
             row3.addView(chatButton);
-
+            row3.addView(deleteButton);
 
             TextView line=new TextView(mainScreen.this);
             line.setText("");
             line.setBackgroundColor(Color.RED);
             line.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,20));
 
-            LinearLayout layout=(LinearLayout) findViewById(R.id.friendsBox);
-            layout.addView(row);
-            layout.addView(row2);
-            layout.addView(row3);
-            layout.addView(line);
+            tableLayout.addView(row);
+            tableLayout.addView(row2);
+            tableLayout.addView(row3);
+            tableLayout.addView(line);
+            tableLayout.setTag("friend_"+id);
+
+            layout.addView(tableLayout);
         }
         @Override
         protected void onPostExecute(Void aVoid) {
             if(isOk){
                 profilePicName=msg;
                 ImageView profilePic=(ImageView)findViewById(R.id.profilePicture);
-                Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+profilePicName+".png").into(profilePic);
+                Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+profilePicName+".png").into(profilePic);
             }
             else{
                 finish();

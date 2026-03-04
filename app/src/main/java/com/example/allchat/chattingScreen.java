@@ -87,7 +87,7 @@ public class chattingScreen extends AppCompatActivity {
                 tableName+=friendUsername+username;
             }
 
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/checkLastMessage.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName+"&lastIndex="+lastIndex;
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/checkLastMessage.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName+"&lastIndex="+lastIndex;
 
             try{
                 URL url = new URL(link);
@@ -162,7 +162,7 @@ public class chattingScreen extends AppCompatActivity {
                 tableName+=friendUsername+username;
             }
 
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/getMessages.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName;
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/getMessages.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName;
 
             try{
                 URL url = new URL(link);
@@ -189,10 +189,8 @@ public class chattingScreen extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             if(isOk){
-
                 try {
                     JSONArray arr=new JSONArray(msg);
-
                     if(arr.length()>0){
                         for (int i=0;i<arr.length();i++){
                             JSONObject obj=arr.getJSONObject(i);
@@ -223,13 +221,6 @@ public class chattingScreen extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-
-
-
-
-
                 loadData();
             }
             else if(msg.equals("No Messages")){
@@ -237,6 +228,7 @@ public class chattingScreen extends AppCompatActivity {
             }
             else{
                 Toast.makeText(chattingScreen.this,""+msg,Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
         public void setMessage(String fromWho,String message){
@@ -280,8 +272,10 @@ public class chattingScreen extends AppCompatActivity {
             fromWhoField.setTextColor(Color.WHITE);
             messageField.setTextColor(Color.WHITE);
 
-            fromWhoField.setText("From: "+fromWho);
-            fromWhoField.setTextColor(Color.YELLOW);
+            String fromWhoRow = isItFromU ? "YOU" : "From: "+fromWho;
+            int fromWhoColor = isItFromU ? Color.GRAY : Color.YELLOW;
+            fromWhoField.setText(fromWhoRow);
+            fromWhoField.setTextColor(fromWhoColor);
             messageField.setText(message);
 
             row1.addView(fromWhoField);
@@ -299,7 +293,7 @@ public class chattingScreen extends AppCompatActivity {
         private String msg;
         @Override
         protected Void doInBackground(Void... voids) {
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/getFriendData.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/getFriendData.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&friendUsername="+friendUsername;
             try{
                 URL url = new URL(link);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -334,6 +328,7 @@ public class chattingScreen extends AppCompatActivity {
             }
             else{
                 Toast.makeText(chattingScreen.this,""+msg,Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
     }
@@ -351,7 +346,7 @@ public class chattingScreen extends AppCompatActivity {
 
         ImageView friendPicField=(ImageView)findViewById(R.id.chatFriendPic);
 
-        Picasso.get().load("http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Extra/styles/images/users%20images/"+friendPicName+".png").into(friendPicField);
+        Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+friendPicName+".png").into(friendPicField);
     }
     private void loadFriendUsername(){
         TextView usernameView=(TextView) findViewById(R.id.friendUsernameChat);
@@ -381,7 +376,7 @@ public class chattingScreen extends AppCompatActivity {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            String link="http://"+DBInfo.hostName+"/"+DBInfo.siteName+"/Mobile/sendMessage.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName+"&message="+encodedMessage+"&lastIndex="+lastIndex;
+            String link=DBInfo.hostName+DBInfo.siteName+"Mobile/sendMessage.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password)+"&tableName="+tableName+"&message="+encodedMessage+"&lastIndex="+lastIndex;
 
 
             try{
@@ -424,5 +419,9 @@ public class chattingScreen extends AppCompatActivity {
         else{
             Toast.makeText(this,"Field cannot be empty",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void goBack(View v) {
+        finish();
     }
 }
