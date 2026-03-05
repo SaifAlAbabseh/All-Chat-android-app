@@ -93,7 +93,9 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                         mainScreen.username=username;
                         mainScreen.password=password;
-                        startActivity(new Intent(MainActivity.this,mainScreen.class));
+                        Intent intent = new Intent(MainActivity.this, mainScreen.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                     else{
                         Toast.makeText(MainActivity.this,msg,Toast.LENGTH_SHORT).show();

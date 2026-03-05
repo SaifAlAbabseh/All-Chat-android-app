@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_blue_dark"
+            android:gravity="center_vertical"
             android:paddingTop="10dp"
             android:paddingBottom="10dp">
 
@@ -29,6 +30,18 @@
                 android:onClick="mainpopupmenu"
                 app:srcCompat="@drawable/main"
                 tools:ignore="SpeakableTextPresentCheck" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/usernameField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
         </TableRow>
 
         <TableRow

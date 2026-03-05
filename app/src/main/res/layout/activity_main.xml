@@ -78,7 +78,8 @@
                     android:backgroundTint="@android:color/holo_red_light"
                     android:onClick="login"
                     android:text="Log In"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    app:cornerRadius="100dp" />
             </TableRow>
 
             <TableRow

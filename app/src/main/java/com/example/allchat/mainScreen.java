@@ -21,30 +21,40 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.button.MaterialButton;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 public class mainScreen extends AppCompatActivity {
     public static String username,password;
     private String profilePicName;
+    private boolean isFreshStart = true;
+    public static Dialog popUpMenu = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         if(chattingScreen.timer!=null){
             chattingScreen.timer.cancel();
         }
         otherMethods.changeStatusBarColor(this);
         loadUserData();
+        isFreshStart = true;
     }
+
     public void goToProfileEditScreen(View v){
-        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( DBInfo.hostName+DBInfo.siteName+"uploadPic.php?username="+username+"&password="+otherMethods.getMd5(password)+"&temp=javaToWeb1090" ) );
-        startActivity( browse );
+        popUpMenu.dismiss();
+        Intent intent = new Intent(mainScreen.this, change_picture.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     public class addFriendConn extends AsyncTask<Void,Void,Void>{
@@ -67,21 +77,22 @@ public class mainScreen extends AppCompatActivity {
                 int responseCode = con.getResponseCode();
                 if(responseCode==HttpURLConnection.HTTP_OK){
                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String line=""+in.readLine();
-                    if(line.equals("ok")){
+                    String line=in.readLine();
+                    if(line != null && line.equals("ok")){
                         isOk=true;
                     }
-                    msg=line;
+                    msg=line != null ? line : "Unknown error";
                 }
             }
             catch(Exception ex){
                 ex.printStackTrace();
+                msg = "Connection error";
             }
             return null;
         }
         @Override
         protected void onPostExecute(Void aVoid) {
-            Dialog loading=new Dialog(mainScreen.this);
+            final Dialog loading=new Dialog(mainScreen.this);
             loading.setContentView(R.layout.loadingscreen);
             loading.setCanceledOnTouchOutside(false);
             loading.show();
@@ -89,22 +100,20 @@ public class mainScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     Toast.makeText(mainScreen.this, msg,Toast.LENGTH_SHORT).show();
-                    addFriendFieldRef.setText("");
-                    loading.hide();
+                    if (addFriendFieldRef != null) addFriendFieldRef.setText("");
+                    loading.dismiss();
                 }
-            },3000);
-
+            },2000);
         }
     }
 
     public class deleteFriendConn extends AsyncTask<Void,Void,Void>{
         private String msg="";
-        private boolean isOk=false;
         private String friendUsername;
-        private String deletedFriendFieldRef;
-        public deleteFriendConn(String friendUsername,String deletedFriendFieldRef){
+        private String deletedFriendTag;
+        public deleteFriendConn(String friendUsername,String deletedFriendTag){
             this.friendUsername=friendUsername;
-            this.deletedFriendFieldRef=deletedFriendFieldRef;
+            this.deletedFriendTag=deletedFriendTag;
         }
         @Override
         protected Void doInBackground(Void... voids) {
@@ -117,8 +126,7 @@ public class mainScreen extends AppCompatActivity {
                 int responseCode = con.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String line=""+in.readLine();
-                    msg=line;
+                    msg=in.readLine();
                 }
             }catch(Exception ex){
                 ex.printStackTrace();
@@ -127,7 +135,7 @@ public class mainScreen extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(Void aVoid) {
-            Dialog loading=new Dialog(mainScreen.this);
+            final Dialog loading=new Dialog(mainScreen.this);
             loading.setContentView(R.layout.loadingscreen);
             loading.setCanceledOnTouchOutside(false);
             loading.show();
@@ -136,55 +144,52 @@ public class mainScreen extends AppCompatActivity {
                 public void run() {
                     Toast.makeText(mainScreen.this, msg,Toast.LENGTH_SHORT).show();
                     LinearLayout friendsBox = findViewById(R.id.friendsBox);
-                    View friendRow = friendsBox.findViewWithTag(deletedFriendFieldRef);
+                    View friendRow = friendsBox.findViewWithTag(deletedFriendTag);
                     if(friendRow != null) {
                         friendsBox.removeView(friendRow);
                     }
-                    loading.hide();
+                    loading.dismiss();
                 }
-            },3000);
-
+            },2000);
         }
     }
 
     public void showAddFriendScreen(View v){
-        Dialog d=new Dialog(this);
+        final Dialog d=new Dialog(this);
         d.setContentView(R.layout.add_friend_screen);
         d.setCanceledOnTouchOutside(false);
         d.show();
         Window window = d.getWindow();
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        Button exitButton =(Button)d.findViewById(R.id.addFriendExit);
+        if (window != null) window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        Button exitButton = d.findViewById(R.id.addFriendExit);
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 d.dismiss();
-                d.hide();
             }
         });
 
-
-        Button addButton=(Button)d.findViewById(R.id.addFriendButton);
+        Button addButton = d.findViewById(R.id.addFriendButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText friendUsernameField=(EditText) d.findViewById(R.id.addFriendField);
-                String friendUsername=friendUsernameField.getText().toString();
+                EditText friendUsernameField = d.findViewById(R.id.addFriendField);
+                String friendUsername = friendUsernameField.getText().toString();
                 if(!friendUsername.trim().equals("")){
-                    addFriendConn addConn=new addFriendConn(friendUsername,friendUsernameField);
-                    addConn.execute();
-                }
-                else{
+                    new addFriendConn(friendUsername,friendUsernameField).execute();
+                } else {
                     Toast.makeText(mainScreen.this,"Field cannot be empty",Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
+
     public void refresh(View v){
-        LinearLayout layout=(LinearLayout) findViewById(R.id.friendsBox);
+        LinearLayout layout = findViewById(R.id.friendsBox);
         layout.removeAllViews();
         loadUserData();
-        Dialog loading=new Dialog(mainScreen.this);
+        final Dialog loading=new Dialog(mainScreen.this);
         loading.setContentView(R.layout.loadingscreen);
         loading.setCanceledOnTouchOutside(false);
         loading.show();
@@ -192,14 +197,16 @@ public class mainScreen extends AppCompatActivity {
             @Override
             public void run() {
                 loading.dismiss();
-                loading.hide();
             }
-        },2000);
+        },1000);
     }
-    private void loadUserData(){
-        conn c=new conn(username,password);
-        c.execute();
+
+    private void loadUserData() {
+        TextView usernameView = findViewById(R.id.usernameField);
+        usernameView.setText(username);
+        new conn(username,password).execute();
     }
+
     public class updateAva extends AsyncTask<Void,Void,Void>{
         private String msg="";
         private boolean isOk=false;
@@ -214,8 +221,8 @@ public class mainScreen extends AppCompatActivity {
                 int responseCode = con.getResponseCode();
                 if(responseCode==HttpURLConnection.HTTP_OK){
                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String line=""+in.readLine();
-                    if(line.equals("ok")){
+                    String line=in.readLine();
+                    if(line != null && line.equals("ok")){
                         isOk=true;
                     }
                     msg=line;
@@ -228,41 +235,57 @@ public class mainScreen extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(Void aVoid) {
-            Dialog loading=new Dialog(mainScreen.this);
+            final Dialog loading=new Dialog(mainScreen.this);
             loading.setContentView(R.layout.loadingscreen);
-            loading.setCanceledOnTouchOutside(false);
             loading.show();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    loading.dismiss();
                     if(isOk){
                         finish();
-                        startActivity(new Intent(mainScreen.this,MainActivity.class));
-                        loading.hide();
-                    }
-                    else{
-                        loading.hide();
+                        Intent intent = new Intent(mainScreen.this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    } else {
                         Toast.makeText(mainScreen.this,""+msg,Toast.LENGTH_SHORT).show();
                     }
                 }
-            },2000);
-
+            },1500);
         }
     }
+
     public void logout(View v){
+        popUpMenu.dismiss();
         new updateAva().execute();
     }
+
     public void mainpopupmenu(View v){
-        Dialog d=new Dialog(this);
+        final Dialog d=new Dialog(this);
         d.setContentView(R.layout.main_menu_profile_pic_click_popup);
-        TextView nameonmainpopup=(TextView)d.findViewById(R.id.usernameView);
+        TextView nameonmainpopup = d.findViewById(R.id.usernameView);
         nameonmainpopup.setText(username);
-        ImageView profilePic=(ImageView)d.findViewById(R.id.mainPopUpPic);
-        Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+profilePicName+".png").into(profilePic);
+        ImageView profilePic = d.findViewById(R.id.mainPopUpPic);
+        Picasso.get()
+                .load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+profilePicName+".png")
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .into(profilePic);
         d.show();
         Window window = d.getWindow();
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (window != null) window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popUpMenu = d;
     }
+
+    public void goToResetPasswordScreen(View v) {
+        popUpMenu.dismiss();
+        reset_password.currentPassword = password;
+        reset_password.username = username;
+        Intent intent = new Intent(mainScreen.this, reset_password.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
     public class conn extends AsyncTask<Void,Void,Void> {
         String username,password;
         public conn(String username,String password){
@@ -273,6 +296,7 @@ public class mainScreen extends AppCompatActivity {
         private String msg2="";
         private boolean isOk=false;
         private boolean isOk2=false;
+
         @Override
         protected Void doInBackground(Void... voids) {
             String link=DBInfo.hostName+DBInfo.siteName+"Mobile/getProfilePic.php?check=fromMobile1090&username="+username+"&password="+otherMethods.getMd5(password);
@@ -283,60 +307,60 @@ public class mainScreen extends AppCompatActivity {
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", USER_AGENT);
                 int responseCode = con.getResponseCode();
+
                 URL url2 = new URL(link2);
                 HttpURLConnection con2 = (HttpURLConnection) url2.openConnection();
                 con2.setRequestMethod("GET");
                 con2.setRequestProperty("User-Agent", USER_AGENT);
-                int responseCode2 = con.getResponseCode();
+                int responseCode2 = con2.getResponseCode();
+
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String line=""+in.readLine();
-                    if(line.equals("Unknown Error")){
-                        isOk=false;
-                    }
-                    else{
+                    String line=in.readLine();
+                    if(line != null && !line.equals("Unknown Error")){
                         isOk=true;
+                        msg=line;
                     }
-                    msg=line;
                 }
                 if(responseCode2 == HttpURLConnection.HTTP_OK){
                     BufferedReader in = new BufferedReader(new InputStreamReader(con2.getInputStream()));
-                    String line=""+in.readLine();
-                    if(line.equals("Unknown Error")){
-                        isOk2=false;
-                    }
-                    else{
+                    String line=in.readLine();
+                    if(line != null && !line.equals("Unknown Error")){
                         isOk2=true;
+                        msg2=line;
                     }
-                    msg2=line;
                 }
             }catch(Exception ex){
                 ex.printStackTrace();
             }
-
             return null;
         }
 
         private void showFriends(){
-            String fullmsg=msg2.substring(0,msg2.length()-1);
-            String[] arr1=fullmsg.split("&");
+            if (msg2 == null || msg2.isEmpty()) return;
+            String fullmsg = msg2.endsWith("&") ? msg2.substring(0, msg2.length()-1) : msg2;
+            String[] arr1 = fullmsg.split("&");
+            LinearLayout layout = findViewById(R.id.friendsBox);
+            layout.removeAllViews();
             for(int i=0;i<arr1.length;i++){
-                String[] arr2=arr1[i].split("\\|");
-                setFriend(arr2[0],arr2[1],arr2[3], i+1);
+                String[] arr2 = arr1[i].split("\\|");
+                if (arr2.length >= 4) {
+                    setFriend(layout, arr2[0],arr2[1],arr2[3], i+1);
+                }
             }
-
         }
 
-        private void setFriend(String username,String picture,String whichSide, int id){
-
-            LinearLayout layout=(LinearLayout) findViewById(R.id.friendsBox);
-
+        private void setFriend(LinearLayout layout, final String friendUsername, final String picture, final String whichSide, final int id){
             ImageView pic=new ImageView(mainScreen.this);
             pic.setLayoutParams(new TableRow.LayoutParams(150,150));
-            Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+picture+".png").into(pic);
+            Picasso.get()
+                    .load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+picture+".png")
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .into(pic);
 
             TextView uname=new TextView(mainScreen.this);
-            uname.setText(username);
+            uname.setText(friendUsername);
             uname.setTextColor(Color.WHITE);
             uname.setTextSize(25);
             uname.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.MATCH_PARENT));
@@ -347,40 +371,43 @@ public class mainScreen extends AppCompatActivity {
             );
             params.setMargins(20, 0, 20, 0);
 
-            Button chatButton=new Button(mainScreen.this);
+            MaterialButton chatButton=new MaterialButton(mainScreen.this);
             chatButton.setLayoutParams(params);
             chatButton.setPadding(0,0,0,0);
             chatButton.setText("Chat");
-            chatButton.setTextSize(15);
             chatButton.setTextColor(Color.BLACK);
             chatButton.setBackgroundColor(Color.GREEN);
+            chatButton.setCornerRadius(100);
 
-            Button deleteButton=new Button(mainScreen.this);
+            MaterialButton deleteButton=new MaterialButton(mainScreen.this);
             deleteButton.setLayoutParams(params);
             deleteButton.setPadding(0,0,0,0);
             deleteButton.setText("Delete");
-            deleteButton.setTextSize(15);
             deleteButton.setTextColor(Color.BLACK);
             deleteButton.setBackgroundColor(Color.RED);
+            deleteButton.setCornerRadius(100);
 
             chatButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     chattingScreen.friendPicName=picture;
-                    chattingScreen.friendUsername=username;
+                    chattingScreen.friendUsername=friendUsername;
                     chattingScreen.username=mainScreen.username;
                     chattingScreen.password=password;
-                    chattingScreen.whichSide=Integer.parseInt(whichSide);
-                    Dialog d=new Dialog(mainScreen.this);
+                    try {
+                        chattingScreen.whichSide=Integer.parseInt(whichSide);
+                    } catch (Exception e) { chattingScreen.whichSide = 1; }
+
+                    final Dialog d=new Dialog(mainScreen.this);
                     d.setContentView(R.layout.loadingscreen);
-                    d.setCanceledOnTouchOutside(false);
                     d.show();
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             d.dismiss();
-                            startActivity(new Intent(mainScreen.this,chattingScreen.class));
-                            d.hide();
+                            Intent intent = new Intent(mainScreen.this, chattingScreen.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
                         }
                     },1000);
                 }
@@ -389,82 +416,74 @@ public class mainScreen extends AppCompatActivity {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String rowTag = "friend_"+id;
-                    new deleteFriendConn(username, rowTag).execute();
+                    new deleteFriendConn(friendUsername, "friend_"+id).execute();
                 }
             });
 
-
             TableRow row=new TableRow(mainScreen.this);
             row.setGravity(Gravity.CENTER);
-            row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-
             row.addView(pic);
 
             TableRow row2=new TableRow(mainScreen.this);
             row2.setGravity(Gravity.CENTER);
-            row2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-
+            row2.addView(uname);
 
             TableRow row3=new TableRow(mainScreen.this);
             row3.setGravity(Gravity.CENTER);
-            row3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-
-
-            TableLayout tableLayout = new TableLayout(mainScreen.this);
-            tableLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            ));
-
-            row2.addView(uname);
             row3.addView(chatButton);
             row3.addView(deleteButton);
 
-            TextView line=new TextView(mainScreen.this);
-            line.setText("");
-            line.setBackgroundColor(Color.RED);
-            line.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,20));
-
+            TableLayout tableLayout = new TableLayout(mainScreen.this);
             tableLayout.addView(row);
             tableLayout.addView(row2);
             tableLayout.addView(row3);
-            tableLayout.addView(line);
-            tableLayout.setTag("friend_"+id);
 
+            TextView line=new TextView(mainScreen.this);
+            line.setBackgroundColor(Color.RED);
+            line.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,5));
+            tableLayout.addView(line);
+
+            tableLayout.setTag("friend_"+id);
             layout.addView(tableLayout);
         }
+
         @Override
         protected void onPostExecute(Void aVoid) {
             if(isOk){
+                System.out.println("tttttttttttttttttttttttttttttttttttttttttttttttttttttt");
                 profilePicName=msg;
-                ImageView profilePic=(ImageView)findViewById(R.id.profilePicture);
-                Picasso.get().load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+profilePicName+".png").into(profilePic);
-            }
-            else{
+                ImageView profilePic = findViewById(R.id.profilePicture);
+                Picasso.get()
+                        .load(DBInfo.hostName+DBInfo.siteName+"Extra/styles/images/users_images/"+profilePicName+".png")
+                        .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .networkPolicy(NetworkPolicy.NO_CACHE)
+                        .into(profilePic);
+            } else {
                 finish();
-                startActivity(new Intent(mainScreen.this,MainActivity.class));
+                Intent intent = new Intent(mainScreen.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
-            if(isOk2 && msg2.equals("No Friends")){
 
+            if(isOk2 && "No Friends".equals(msg2)){
                 TextView noFriendsView=new TextView(mainScreen.this);
                 noFriendsView.setText("No Friends");
                 noFriendsView.setTextColor(Color.WHITE);
                 noFriendsView.setGravity(Gravity.CENTER);
                 noFriendsView.setTextSize(30);
-                noFriendsView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT));
-
-                LinearLayout layout=(LinearLayout) findViewById(R.id.friendsBox);
-                layout.addView(noFriendsView);
-            }
-            else if(isOk2){
+                ((LinearLayout)findViewById(R.id.friendsBox)).addView(noFriendsView);
+            } else if(isOk2){
                 showFriends();
             }
-            else{
-                Toast.makeText(mainScreen.this,"Unknown Error",Toast.LENGTH_SHORT).show();
-                finish();
-                startActivity(new Intent(mainScreen.this,MainActivity.class));
-            }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!isFreshStart) {
+            loadUserData();
+        }
+        isFreshStart = false;
     }
 }
