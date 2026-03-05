@@ -39,11 +39,11 @@ public class chattingScreen extends AppCompatActivity {
     private int lastIndex=0;
     @Override
     public void onBackPressed() {
-        finish();
+        super.onBackPressed();
         if(timer!=null){
             timer.cancel();
         }
-        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -422,6 +422,9 @@ public class chattingScreen extends AppCompatActivity {
     }
 
     public void goBack(View v) {
+        if(timer!=null){
+            timer.cancel();
+        }
         finish();
     }
 }
