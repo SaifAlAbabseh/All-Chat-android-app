@@ -186,8 +186,6 @@ public class mainScreen extends AppCompatActivity {
     }
 
     public void refresh(View v){
-        LinearLayout layout = findViewById(R.id.friendsBox);
-        layout.removeAllViews();
         loadUserData();
         final Dialog loading=new Dialog(mainScreen.this);
         loading.setContentView(R.layout.loadingscreen);
@@ -288,6 +286,8 @@ public class mainScreen extends AppCompatActivity {
 
     public class conn extends AsyncTask<Void,Void,Void> {
         String username,password;
+
+        private final LinearLayout layout = findViewById(R.id.friendsBox);
         public conn(String username,String password){
             this.username=username;
             this.password=password;
@@ -340,8 +340,6 @@ public class mainScreen extends AppCompatActivity {
             if (msg2 == null || msg2.isEmpty()) return;
             String fullmsg = msg2.endsWith("&") ? msg2.substring(0, msg2.length()-1) : msg2;
             String[] arr1 = fullmsg.split("&");
-            LinearLayout layout = findViewById(R.id.friendsBox);
-            layout.removeAllViews();
             for(int i=0;i<arr1.length;i++){
                 String[] arr2 = arr1[i].split("\\|");
                 if (arr2.length >= 4) {
@@ -449,6 +447,7 @@ public class mainScreen extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            layout.removeAllViews();
             if(isOk){
                 System.out.println("tttttttttttttttttttttttttttttttttttttttttttttttttttttt");
                 profilePicName=msg;
