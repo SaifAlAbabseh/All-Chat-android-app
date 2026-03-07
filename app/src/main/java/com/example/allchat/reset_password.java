@@ -54,7 +54,6 @@ public class reset_password extends AppCompatActivity {
                 if(responseCode==HttpURLConnection.HTTP_OK){
                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String line=in.readLine();
-                    System.out.println("tttttttttttttttttttttttttttttttttttttttt" + line);
                     msg=line != null ? line : "Unknown error";
                 }
             }
