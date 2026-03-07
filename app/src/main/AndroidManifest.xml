@@ -15,7 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AllChat"
-        android:usesCleartextTraffic="true">
+        >
+        <activity
+            android:name=".notifications_screen"
+            android:launchMode="standard"
+            android:exported="false" />
+        <activity
+            android:name=".create_new_account"
+            android:launchMode="standard"
+            android:exported="false" />
         <activity
             android:name=".change_picture"
             android:launchMode="standard"

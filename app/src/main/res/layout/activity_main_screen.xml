@@ -42,6 +42,23 @@
                 android:text="TextView"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button2"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:foreground="@drawable/ic_notifications"
+                android:foregroundGravity="center"
+                android:onClick="goToNotificationsScreen"
+                tools:ignore="SpeakableTextPresentCheck" />
         </TableRow>
 
         <TableRow
@@ -60,6 +77,7 @@
                 android:textSize="16sp"
                 app:cornerRadius="100dp"
                 app:icon="@drawable/ic_baseline_refresh_24"
+                app:iconTint="@color/white"
                 tools:ignore="SpeakableTextPresentCheck" />
         </TableRow>
 

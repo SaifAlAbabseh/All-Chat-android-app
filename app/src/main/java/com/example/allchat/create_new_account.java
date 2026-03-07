@@ -15,7 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class change_picture extends AppCompatActivity {
+public class create_new_account extends AppCompatActivity {
 
     private ValueCallback<Uri[]> filePathCallback;
     private static final int FILE_CHOOSER_REQUEST_CODE = 100;
@@ -23,36 +23,15 @@ public class change_picture extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_picture);
+        setContentView(R.layout.activity_create_new_account);
         getSupportActionBar().hide();
         otherMethods.changeStatusBarColor(this);
 
         WebView webView = findViewById(R.id.webViewContainer);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setAllowContentAccess(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl(DBInfo.hostName+DBInfo.siteName+"Mobile/uploadPic.php?username="+mainScreen.username+"&password="+otherMethods.getMd5(mainScreen.password)+"&temp=javaToWeb1090");
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onShowFileChooser(
-                    WebView webView,
-                    ValueCallback<Uri[]> filePathCallback,
-                    FileChooserParams fileChooserParams) {
-
-                if (change_picture.this.filePathCallback != null) {
-                    change_picture.this.filePathCallback.onReceiveValue(null);
-                }
-
-                change_picture.this.filePathCallback = filePathCallback;
-
-                Intent intent = fileChooserParams.createIntent();
-                startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE);
-                return true;
-            }
-        });
+        webView.loadUrl(DBInfo.hostName+DBInfo.siteName+"Mobile/createAccount.php?check=fromMobile1090");
     }
 
     public void goBack(View v) {

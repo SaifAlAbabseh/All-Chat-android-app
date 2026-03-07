@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToSignUpScreen(View v){
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(DBInfo.hostName+"?t=0"));
-        startActivity(browserIntent);
+        Intent intent = new Intent(MainActivity.this, create_new_account.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     public class conn extends AsyncTask<Void,Void,Void> {
         String username,password;

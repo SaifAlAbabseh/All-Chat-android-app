@@ -50,6 +50,12 @@ public class mainScreen extends AppCompatActivity {
         isFreshStart = true;
     }
 
+    public void goToNotificationsScreen(View v) {
+        Intent intent = new Intent(mainScreen.this, notifications_screen.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
     public void goToProfileEditScreen(View v){
         popUpMenu.dismiss();
         Intent intent = new Intent(mainScreen.this, change_picture.class);
@@ -449,7 +455,6 @@ public class mainScreen extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             layout.removeAllViews();
             if(isOk){
-                System.out.println("tttttttttttttttttttttttttttttttttttttttttttttttttttttt");
                 profilePicName=msg;
                 ImageView profilePic = findViewById(R.id.profilePicture);
                 Picasso.get()
